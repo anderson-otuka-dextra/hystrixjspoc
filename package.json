@@ -1,0 +1,35 @@
+{
+  "name": "otuka-hystrixjs-poc",
+  "version": "0.1.0",
+  "description": "PoC for HystrixJS",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:anderson-otuka-dextra/otuka-hystrixjs-poc.git"
+  },
+  "author": {
+    "name": "Anderson Otuka (Dextra)",
+    "email": "anderson.otuka@dextra-sw.com"
+  },
+  "dependencies": {
+    "hystrixjs": "^0.2.0"
+  },
+  "devDependencies": {
+    "express": "^4.13.3",
+    "http": "0.0.0",
+    "lodash": "^4.17.4",
+    "minimist": "^1.1.2",
+    "q": "^1.0.1",
+    "request": "^2.60.0",
+    "request-promise-json": "^1.0.4",
+    "rewire": "^2.3.4",
+    "rxjs": "^5.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "license": "ISC"
+}
