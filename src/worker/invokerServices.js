@@ -125,17 +125,14 @@ function InvokerServices (port, externalServicesPort, verbose) {
     app.get('/api/hystrix.stream', hystrixStream);
 
     this.start = function() {
-        process.title = 'invokerServices';
+        process.title = `invokerServices:${port}`;
         app.listen(port, function() {
             var start = Date.now();
-            console.log(`[${process.pid}] InvokerServices listening on ${port}. Available endpoints:
+            console.log(`[${process.pid}] InvokerServices listening on port [${port}]. Available endpoints:
 - http://localhost:${port}/getDateFromAPI
 - http://localhost:${port}/getCountFromAPI
 - http://localhost:${port}/getDateAndCountFromAPI
-- http://localhost:${port}/api/hystrix.stream
-
-You can plug hystrix-dashboard on http://localhost:${port}/api/hystrix.stream
-See: https://github.com/Netflix/Hystrix/tree/master/hystrix-dashboard
+- http://localhost:${port}/api/hystrix.stream (Hystrix Dashboard)
 `);
         });
     };
