@@ -24,23 +24,31 @@ $ npm start
 > otuka-hystrixjs-poc@0.1.0 start /home/otuka/dextra/nextel/git/otuka-hystrixjs-poc
 > node src/index.js
 
-Run with "npm start -- -L" to enable LOG mode
+Run with "npm start -- -L" to enable LOG mode.
 
-[20642] ExternalServices listening on 3002. Available endpoints:
-- http://localhost:3002/date
-- http://localhost:3002/count
+You can plug the Hystrix Dashboard on all hystrix.streams once they're up.
+More information: [https://github.com/Netflix/Hystrix/tree/master/hystrix-dashboard]
 
-[20649] RequestGenerator will start dispatching requests in 500ms
-[20648] InvokerServices listening on 3001. Available endpoints:
-- http://localhost:3001/getDateFromAPI
-- http://localhost:3001/getCountFromAPI
-- http://localhost:3001/getDateAndCountFromAPI
-- http://localhost:3001/api/hystrix.stream
+[6060] ExternalServices listening on port [3020]. Available endpoints:
+- http://localhost:3020/date
+- http://localhost:3020/count
 
-You can plug Hystrix Dashboard on http://localhost:3001/api/hystrix.stream
-See: https://github.com/Netflix/Hystrix/tree/master/hystrix-dashboard
+[6073] RequestGenerator will start dispatching requests in 500ms to all InvokerServices.
 
-[20649] RequestGenerator: Started dispatching requests.
+[6066] InvokerServices listening on port [3010]. Available endpoints:
+- http://localhost:3010/getDateFromAPI
+- http://localhost:3010/getCountFromAPI
+- http://localhost:3010/getDateAndCountFromAPI
+- http://localhost:3010/api/hystrix.stream (Hystrix Dashboard)
+
+[6072] InvokerServices listening on port [3011]. Available endpoints:
+- http://localhost:3011/getDateFromAPI
+- http://localhost:3011/getCountFromAPI
+- http://localhost:3011/getDateAndCountFromAPI
+- http://localhost:3011/api/hystrix.stream (Hystrix Dashboard)
+
+[6073] RequestGenerator dispatching requests every second to http://localhost:3010/getDateAndCountFromAPI
+[6073] RequestGenerator dispatching requests every second to http://localhost:3011/getDateAndCountFromAPI
 ```
 
 ## Integrating Hystrix Dashboard
@@ -65,5 +73,12 @@ Press any key to stop the server.
 After `Press any key to stop the server` is shown, point your browser to the displayed location (<http://localhost:7979/hystrix-dashboard>) and fill up the form accordingly:
 
 ![Image](doc/form.png?raw=true)
+Repeat for each endpoint:
+1. Type the `hystrix.stream` URL
+2. Click on "Add Stream"
+
+Then after both endpoints show up, click on 3. Monitor Streams.
+
+The following dashboard will be shown:
 
 ![Image](doc/result.png?raw=true)
