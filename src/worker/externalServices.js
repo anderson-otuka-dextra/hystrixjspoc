@@ -33,7 +33,7 @@ function ExternalServices (port, verbose) {
         process.title = 'externalServices';
         app.listen(port, function() {
             var start = Date.now();
-            console.log(`[${process.pid}] ExternalServices listening on ${port}. Available endpoints:
+            console.log(`[${process.pid}] ExternalServices listening on port [${port}]. Available endpoints:
 - http://localhost:${port}/date
 - http://localhost:${port}/count
 `);
