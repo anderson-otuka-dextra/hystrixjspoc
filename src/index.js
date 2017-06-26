@@ -2,7 +2,7 @@ const cluster = require('cluster'),
     minimist = require('minimist');
 
 const opts = {
-    INVOKER_SERVICES_PORTS: [3010, 3011],
+    INVOKER_SERVICES_PORTS: [3010], // 3011],
     EXTERNAL_SERVICES_PORT: 3020,
     STATS_IO_PORT: 3005,
     STATS_WEBUI_PORT: 3000,

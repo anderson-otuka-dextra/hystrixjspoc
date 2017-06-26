@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Hystrix POC</title>
+        <style>
+            body {
+                background: #eef;
+            }
+            ul {
+                display:inline-flex;
+                margin: 0;
+                padding: 5px 7px 5px;
+                list-style-type: none;
+                background: #fff;
+                border-radius: 5px;
+                border: solid 1px #ccc;
+                width: auto;
+            }
+            li {
+                margin: 0 2px 0 0;
+                padding: 6px 16px;
+                background: #cdd;
+                border-right: none;
+                border-bottom: solid 1px #888;
+                border-top: none;
+            }
+            li:first-child {
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+            }
+            li:last-child {
+                border-top-right-radius: 5px;
+                border-bottom-right-radius: 5px;
+            }
+            li.active {
+                background: #fec;
+                border-top: solid 1px #c97;
+                border-bottom: none;
+            }
+            li:hover:not(.active) {
+                border-color: #9b9;
+                background: #ded;
+                cursor: default;
+            }
+            li:active {
+                border-top: solid 1px #9b9;
+                border-bottom: none;
+                background: #ded;
+                cursor: default;
+            }
+            h3 {
+                margin: 10px 0 5px;
+            }
+            iframe {
+                background: #fff;
+                display: none;
+                border: none;
+            }
+            .dashboardActive iframe {
+                display: block;
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 0;
+            }
+            .dashboardActive #main {
+                display: block;
+                position: fixed;
+                right: 30px;
+                top: 20px;
+                width: 670px;
+                height: 450px;
+                z-index: 1;
+                zoom: 0.66;
+                padding: 20px;
+                border-radius: 10px;
+            }
+            .dashboardActive #main *,
+            .dashboardActive #main.hidden * {
+                opacity: 0;
+            }
+            .dashboardActive #main:hover:not(.hidden) {
+                background: rgba(240, 240, 240, 0.9);
+                border-bottom: solid 1px rgba(128, 128, 128, 0.3);
+            }
+            .dashboardActive #main:hover:not(.hidden) h1 {
+                background: transparent;
+                border-bottom: transparent;
+            }
+            .dashboardActive #main:hover:not(.hidden) * {
+                opacity: 1;
+            }
+            h1 {
+                margin: 0;
+            }
+            #toggle {
+                display: none;
+            }
+            .dashboardActive #main h1,
+            .dashboardActive #main.hidden h1 {
+                opacity: 1;
+                background: rgba(240, 240, 240, 0.9);
+                display: inline;
+                padding: 20px;
+                margin: -20px;
+                border-radius: 10px;
+                border-bottom: solid 1px rgba(128, 128, 128, 0.3);
+            }
+            #main {
+                -moz-user-select: none;
+                -webkit-user-select: none;
+                -ms-user-select:none;
+                user-select:none;
+                -o-user-select:none;
+            }
+            .dashboardActive #toggle,
+            .dashboardActive .hidden #toggle {
+                display: inline;
+                opacity: 1;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="main">
+            <h1>Hystrix POC <a id="toggle">(x)</a></h1>
+            <h2>Show Hystrix Dashboard</h2>
+            <ul>
+                <li action="open_frame">Toggle</li>
+                <li action="open_frame_tab">In another tab</li>
+            </ul>
+            <h2>Services Invoker</h2>
+            <h3>Requests per second</h3>
+            <ul>
+                <li action="reqgen" param="=0">0</li>
+                <li action="reqgen" param="=1" class="active">1</li>
+                <li action="reqgen" param="=3">3</li>
+                <li action="reqgen" param="=4">4*</li>
+                <li action="reqgen" param="=6">6*</li>
+                <li action="reqgen" param="=10">10*</li>
+            </ul>
+            <h2>External Services</h2>
+            <h3>/count response latency</h3>
+            <ul>
+                <li action="countlatency" param="=100" class="active">100ms</li>
+                <li action="countlatency" param="=1000">1s</li>
+                <li action="countlatency" param="=5000">5s</li>
+                <li action="countlatency" param="auto100">Auto add +100ms</li>
+                <li action="countlatency" param="half">Auto 1/2</li>
+            </ul>
+            <ul>
+                <li action="countlatency" param="+500">+500ms</li>
+                <li action="countlatency" param="-500">-500ms</li>
+            </ul>
+            <h3>/date response latency</h3>
+            <ul>
+                <li action="datelatency" param="=100" class="active">100ms</li>
+                <li action="datelatency" param="=1000">1s</li>
+                <li action="datelatency" param="=5000">5s</li>
+                <li action="datelatency" param="auto100">Auto add +100ms</li>
+                <li action="datelatency" param="half">Auto 1/2</li>
+            </ul>
+            <ul>
+                <li action="datelatency" param="+500">+500ms</li>
+                <li action="datelatency" param="-500">-500ms</li>
+            </ul>
+            <h3>Simulations</h3>
+            <ul>
+                <li action="server" param="down">Server down</li>
+                <li action="server" param="maintenance">Server maintenance</li>
+                <li action="server" param="up" class="active">Server up</li>
+            </ul>
+        </div>
+        <iframe id="ifr"></iframe>
+        <script>
+            const actions = {};
+            const PROTOCOL = location.protocol.replace(':', '');
+            const DASHBOARD_URL = `${location.protocol}//${location.hostname}:7979/`
+                + 'hystrix-dashboard/monitor/monitor.html?streams=%5B'
+                + `%7B%22name%22%3A%22Invoker%201%22%2C%22stream%22%3A%22${PROTOCOL}%3A%2F%2F${location.hostname}%3A3010%2Fapi%2Fhystrix.stream%22%2C%22auth%22%3A%22%22%2C%22delay%22%3A%22%22%7D%2C`
+                + `%7B%22name%22%3A%22Invoker%202%22%2C%22stream%22%3A%22${PROTOCOL}%3A%2F%2F${location.hostname}%3A3011%2Fapi%2Fhystrix.stream%22%2C%22auth%22%3A%22%22%2C%22delay%22%3A%22%22%7D%5D`;
+            console.log(DASHBOARD_URL);
+
+            Array.prototype.forEach.call(document.getElementsByTagName('li'), el => el.onclick = function () {
+                let previousActives = this.parentElement.getElementsByClassName('active');
+                if (previousActives.length > 0) {
+                    previousActives[0].className = '';
+                    this.className = 'active';
+                }
+                let action = this.getAttribute('action');
+                if (action && actions[action]) {
+                    actions[action](this.getAttribute('param'));
+                }
+            })
+
+            document.getElementById('toggle').onclick = () => {
+                if (document.getElementById('main').className == 'hidden') {
+                    document.getElementById('main').className = '';
+                } else {
+                    document.getElementById('main').className = 'hidden';
+                }
+            }
+
+            actions.datelatency = (param) => {
+                doPost(`${location.protocol}//${location.hostname}:3020/latency/date/${param}`)
+            }
+
+            actions.countlatency = (param) => {
+                doPost(`${location.protocol}//${location.hostname}:3020/latency/count/${param}`)
+            }
+
+            actions.reqgen = (param) => {
+                doPost(`${location.protocol}//${location.hostname}:3010/setNumberConnectionsPerSecond/${param}`)
+                doPost(`${location.protocol}//${location.hostname}:3011/setNumberConnectionsPerSecond/${param}`)
+            }
+
+            actions.server = (param) => {
+                console.log('server:', param)
+            }
+
+            actions.open_frame = () => {
+                if (!document.getElementById('ifr').src) {
+                    document.getElementById('ifr').src = DASHBOARD_URL;
+                }
+                if (document.body.className == 'dashboardInactive') {
+                    document.body.className = 'dashboardActive';
+                } else {
+                    document.body.className = 'dashboardInactive';
+                }
+            }
+
+            actions.open_frame_tab = () => {
+                window.open(DASHBOARD_URL);
+            }
+
+            function doPost(url) {
+                console.log(url);
+                const request = new XMLHttpRequest();
+                request.open('GET', url, true);
+                request.onload = function() {
+                    if (request.status >= 200 && request.status < 400) {
+                        console.log(request.status, 'OK', request.responseText);
+                    } else {
+                        console.log(request.status, 'NOK', request.responseText);
+                    }
+                };
+                request.onerror = function() {
+                    console.log(request.status, 'ERR', request.responseText);
+                };
+                request.send();
+            }
+        </script>
+    </body>
+</html>
