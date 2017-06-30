@@ -1,0 +1,104 @@
+
+> otuka-hystrixjs-poc@0.1.0 start /home/otuka/dextra/nextel/git/otuka-hystrixjs-poc
+> node src/index.js
+
+Run with "npm start -- -L" to enable LOG mode.
+
+You can plug the Hystrix Dashboard on all hystrix.streams once they're up.
+More information: [https://github.com/Netflix/Hystrix/tree/master/hystrix-dashboard]
+
+[22652] ExternalServices listening on port [3020]. Available endpoints:
+- http://localhost:3020/date
+- http://localhost:3020/count
+
+[22658] InvokerServices listening on port [3010]. Available endpoints:
+- http://localhost:3010/?????
+
+POST http://localhost:3020/_META/delay/get/100 ->
+POST http://localhost:3020/_META/delay/get/100 == true
+GET http://localhost:3010/info/1000 ->
+GET http://localhost:3010/info/1000 == {"source":"http://localhost:3020/get/1000","value":-1000}
+GET http://localhost:3010/info/1500 ->
+GET http://localhost:3010/info/1500 == {"source":"http://localhost:3020/get/1500","value":-1500}
+GET http://localhost:3010/info/2000 ->
+GET http://localhost:3010/info/2000 == {"source":"http://localhost:3020/get/2000","value":-2000}
+GET http://localhost:3010/info/2500 ->
+GET http://localhost:3010/info/2500 == {"source":"http://localhost:3020/get/2500","value":-2500}
+GET http://localhost:3010/info/3000 ->
+GET http://localhost:3010/info/3000 == {"source":"http://localhost:3020/get/3000","value":-3000}
+POST http://localhost:3020/_META/delay/get/6000 ->
+POST http://localhost:3020/_META/delay/get/6000 == true
+GET http://localhost:3010/info/3500 ->
+GET http://localhost:3010/info/4000 ->
+GET http://localhost:3010/info/4500 ->
+GET http://localhost:3010/info/5000 ->
+GET http://localhost:3010/info/5500 ->
+GET http://localhost:3010/info/6000 ->
+GET http://localhost:3010/info/6500 ->
+GET http://localhost:3010/info/3500 == {"source":"http://localhost:3020/load/3500","value":-3500}
+GET http://localhost:3010/info/7000 ->
+GET http://localhost:3010/info/4000 == {"source":"http://localhost:3020/load/4000","value":-4000}
+GET http://localhost:3010/info/7500 ->
+GET http://localhost:3010/info/4500 == {"source":"http://localhost:3020/load/4500","value":-4500}
+GET http://localhost:3010/info/8000 ->
+GET http://localhost:3010/info/5000 == {"source":"http://localhost:3020/load/5000","value":-5000}
+POST http://localhost:3020/_META/delay/load/6000 ->
+POST http://localhost:3020/_META/delay/load/6000 == true
+GET http://localhost:3010/info/8500 ->
+GET http://localhost:3010/info/5500 == {"source":"http://localhost:3020/load/5500","value":-5500}
+GET http://localhost:3010/info/9000 ->
+GET http://localhost:3010/info/9500 ->
+GET http://localhost:3010/info/10000 ->
+GET http://localhost:3010/info/10500 ->
+GET http://localhost:3010/info/11000 ->
+GET http://localhost:3010/info/6000 == {"source":"/info/6000","error":"FALLBACK service error","cause":"CommandTimeOut"}
+GET http://localhost:3010/info/8500 == {"source":"/info/8500","error":"FALLBACK service error","cause":"CommandTimeOut"}
+GET http://localhost:3010/info/11500 ->
+GET http://localhost:3010/info/6500 == {"source":"/info/6500","error":"FALLBACK service error","cause":"CommandTimeOut"}
+GET http://localhost:3010/info/9000 == {"source":"/info/9000","error":"FALLBACK service error","cause":"CommandTimeOut"}
+GET http://localhost:3010/info/12000 ->
+GET http://localhost:3010/info/9500 == {"source":"/info/9500","error":"FALLBACK service error","cause":"CommandTimeOut"}
+GET http://localhost:3010/info/7000 == {"source":"/info/7000","error":"FALLBACK service error","cause":"CommandTimeOut"}
+GET http://localhost:3010/info/12500 ->
+GET http://localhost:3010/info/12500 == {"source":"/info/12500","error":"FALLBACK service error","cause":"OpenCircuitError"}
+GET http://localhost:3010/info/7500 == {"source":"/info/7500","error":"FALLBACK service error","cause":"CommandTimeOut"}
+GET http://localhost:3010/info/10000 == {"source":"/info/10000","error":"FALLBACK service error","cause":"CommandTimeOut"}
+GET http://localhost:3010/info/13000 ->
+GET http://localhost:3010/info/13000 == {"source":"/info/13000","error":"FALLBACK service error","cause":"OpenCircuitError"}
+GET http://localhost:3010/info/8000 == {"source":"/info/8000","error":"FALLBACK service error","cause":"CommandTimeOut"}
+GET http://localhost:3010/info/10500 == {"source":"/info/10500","error":"FALLBACK service error","cause":"CommandTimeOut"}
+POST http://localhost:3020/_META/delay/get/100 ->
+POST http://localhost:3020/_META/delay/get/100 == true
+GET http://localhost:3010/info/13500 ->
+GET http://localhost:3010/info/13500 == {"source":"/info/13500","error":"FALLBACK service error","cause":"OpenCircuitError"}
+GET http://localhost:3010/info/11000 == {"source":"/info/11000","error":"FALLBACK service error","cause":"CommandTimeOut"}
+GET http://localhost:3010/info/14000 ->
+GET http://localhost:3010/info/11500 == {"source":"/info/11500","error":"FALLBACK service error","cause":"CommandTimeOut"}
+GET http://localhost:3010/info/14000 == {"source":"http://localhost:3020/get/14000","value":-14000}
+GET http://localhost:3010/info/14500 ->
+GET http://localhost:3010/info/12000 == {"source":"/info/12000","error":"FALLBACK service error","cause":"CommandTimeOut"}
+GET http://localhost:3010/info/14500 == {"source":"http://localhost:3020/get/14500","value":-14500}
+GET http://localhost:3010/info/15000 ->
+GET http://localhost:3010/info/15000 == {"source":"http://localhost:3020/get/15000","value":-15000}
+GET http://localhost:3010/info/15500 ->
+GET http://localhost:3010/info/15500 == {"source":"http://localhost:3020/get/15500","value":-15500}
+GET http://localhost:3010/info/16000 ->
+GET http://localhost:3010/info/16000 == {"source":"http://localhost:3020/get/16000","value":-16000}
+GET http://localhost:3010/info/16500 ->
+GET http://localhost:3010/info/16500 == {"source":"http://localhost:3020/get/16500","value":-16500}
+GET http://localhost:3010/info/17000 ->
+GET http://localhost:3010/info/17000 == {"source":"http://localhost:3020/get/17000","value":-17000}
+GET http://localhost:3010/info/17500 ->
+GET http://localhost:3010/info/17500 == {"source":"http://localhost:3020/get/17500","value":-17500}
+GET http://localhost:3010/info/18000 ->
+GET http://localhost:3010/info/18000 == {"source":"http://localhost:3020/get/18000","value":-18000}
+POST http://localhost:3020/_META/delay/load/100 ->
+POST http://localhost:3020/_META/delay/load/100 == true
+GET http://localhost:3010/info/18500 ->
+GET http://localhost:3010/info/18500 == {"source":"http://localhost:3020/get/18500","value":-18500}
+GET http://localhost:3010/info/19000 ->
+GET http://localhost:3010/info/19000 == {"source":"http://localhost:3020/get/19000","value":-19000}
+GET http://localhost:3010/info/19500 ->
+GET http://localhost:3010/info/19500 == {"source":"http://localhost:3020/get/19500","value":-19500}
+GET http://localhost:3010/info/20000 ->
+GET http://localhost:3010/info/20000 == {"source":"http://localhost:3020/get/20000","value":-20000}

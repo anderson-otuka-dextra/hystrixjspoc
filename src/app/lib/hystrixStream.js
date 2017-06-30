@@ -1,6 +1,6 @@
 const hystrixStream = require('hystrixjs/lib/http/HystrixSSEStream');
 
-module.exports = (request, response) => {
+module.exports = (response) => {
     response.append('Content-Type', 'text/event-stream;charset=UTF-8');
     response.append('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
     response.append('Pragma', 'no-cache');
